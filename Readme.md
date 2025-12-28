@@ -4,3 +4,14 @@
 - MONGODB CONNECTED SUCCESSFULLY
 - SERVER STARTED USING APP()
 - ENV USED 
+
+# 2 Routes and Controllers
+- routes -> app.use me '/' ye use karenge
+- controller app.use me jo call back use karenge 
+
+# 3 Send otp verification to the user
+- register controller and route 
+- sendmail middle ware to send otp using nodemailer
+- create app from  google account and generated its password for sending email for otp
+- received otp on  my user account
+- fetched html for email format
