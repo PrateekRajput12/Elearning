@@ -25,3 +25,9 @@
 - like sending otp --> verifying otp --> user registered successfully --> checked that user already exist 
 - All working fine till here
 - it was such good process for generating otp and checking and creating user 
+
+
+# 5 Created  Login Controller
+- created login logic and sent the cookie using res.cookie
+- Created isAuth to verify user 
+- Then create getProfile for user

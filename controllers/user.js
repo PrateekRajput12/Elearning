@@ -83,3 +83,46 @@ export const verifyUser = TryCatch(async (req, res) => {
     })
 
 })
+
+
+export const loginUser = TryCatch(async (req, res) => {
+    const { email, password } = req.body
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please enter details" })
+    }
+    const user = await User.findOne({ email })
+    if (!user) {
+        return res.status(400).json({ message: "User does not exist please register first" })
+    }
+
+    const hashedPassword = await bcrypt.compare(password, user.password)
+
+    if (!hashedPassword) {
+        return res.status(400).json({ message: "Password does not match please enter correct password" })
+    }
+
+    const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY, {
+        expiresIn: "7d"
+    })
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,      // true in production (HTTPS)
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+    res.json({
+        message: ` Welcome back ${user.name}`,
+        user
+    })
+})
+
+
+export const userProfile = TryCatch(async (req, res) => {
+
+    const user = await User.findById(req.user._id)
+
+    res.json({ user })
+
+})
