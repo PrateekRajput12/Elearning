@@ -40,3 +40,9 @@
 - Wrote the logic to upload image in disk storage means local storage in upload folder
 - accessed the uploads folder image using localhost --> by app.use("/uploads",express.statis("upload"))
 - thats all at the end we created upload course logic 
+
+
+# 7 Create Lecture
+- in this we created lecture schema 
+- then we created the create lecture controller 
+- then we created route in admin.js to upload lecture by verifying token, admin then upload and then the create lecture controller 
