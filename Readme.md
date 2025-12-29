@@ -46,3 +46,8 @@
 - in this we created lecture schema 
 - then we created the create lecture controller 
 - then we created route in admin.js to upload lecture by verifying token, admin then upload and then the create lecture controller 
+
+
+# 8 Created Get lectures and courses
+- created get all courses and get course by id and the get lectures 
+- for get lectures we used isAuth if searched or fetched by user return subscribed lectures and if admin then all lectures of that course 
