@@ -31,3 +31,12 @@
 - created login logic and sent the cookie using res.cookie
 - Created isAuth to verify user 
 - Then create getProfile for user
+
+
+# 6 Created admin
+- created admin route , controller and schema 
+- and in  admin route created createCourse controller
+- then created route and used is isAuth, created isAdmin and upload multer and createCourse contoller
+- Wrote the logic to upload image in disk storage means local storage in upload folder
+- accessed the uploads folder image using localhost --> by app.use("/uploads",express.statis("upload"))
+- thats all at the end we created upload course logic 

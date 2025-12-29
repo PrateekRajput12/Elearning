@@ -8,9 +8,10 @@ dotenv.config({
 })
 
 app.use(express.json())
+
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
-
+app.use("/uploads", express.static('uploads'))
 
 const PORT = process.env.PORT || 5000
 app.get("/", (req, res) => {
@@ -21,10 +22,12 @@ app.get("/", (req, res) => {
 
 // Importing Routes
 import userRoutes from './routes/user.js'
-
+import adminRoutes from './routes/admin.js'
+import courseRoutes from './routes/course.js'
 // using routes 
 app.use("/api", userRoutes)   // ---> api har uske pehle ayegi
-
+app.use("/api", adminRoutes)
+app.use("/api", courseRoutes)
 app.listen(PORT, () => {
 
     console.log(`running on port ${PORT}`);
