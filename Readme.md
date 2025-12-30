@@ -51,3 +51,9 @@
 # 8 Created Get lectures and courses
 - created get all courses and get course by id and the get lectures 
 - for get lectures we used isAuth if searched or fetched by user return subscribed lectures and if admin then all lectures of that course 
+
+
+# 9 Created delete course and delete lecture
+- created both 
+- with some different logic 
+- in this we use unlink , rm , promisify and other things while deleting lectures and many
