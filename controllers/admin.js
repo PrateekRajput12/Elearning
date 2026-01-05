@@ -153,3 +153,19 @@ export const deleteCourse = TryCatch(async (req, res) => {
 
     res.json({ message: "Course Deleted Successfully" })
 })
+
+
+export const getAllStats = TryCatch(async (req, res) => {
+    const totalCourses = (await Course.find()).length
+    const totalLectures = (await Lecture.find()).length
+    const totalUser = (await User.find()).length
+
+
+    const stats = {
+        totalCourses,
+        totalLectures,
+        totalUser
+    }
+
+    res.json({ stats })
+})

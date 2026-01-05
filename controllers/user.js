@@ -45,10 +45,17 @@ export const register = async (req, res) => {
         )
 
 
-        res.status(200).json({
-            message: "Otp sent to your email",
-            activationToken
+        res.cookie("activationToken", activationToken, {
+            httpOnly: true,
+            sameSite: "lax", // use "none" + secure:true in production
+            secure: false,   // true only on HTTPS
+            maxAge: 5 * 60 * 1000
         })
+
+        res.status(200).json({
+            message: "Otp sent to your email"
+        })
+
 
     } catch (error) {
         console.log(error.message);
@@ -58,7 +65,8 @@ export const register = async (req, res) => {
 
 
 export const verifyUser = TryCatch(async (req, res) => {
-    const { otp, activationToken } = req.body
+    const { otp } = req.body
+    const activationToken = req.cookies.activationToken
 
 
     const verify = jwt.verify(activationToken, process.env.Activation_Secret)
@@ -125,4 +133,15 @@ export const userProfile = TryCatch(async (req, res) => {
 
     res.json({ user })
 
+})
+
+export const logOut = TryCatch(async (req, res) => {
+    res.cookie("token", "", {
+        httpOnly: true,
+        expires: new Date(0), // past date
+        sameSite: "lax",
+        secure: false // true in production
+    });
+
+    res.json({ message: "Logged out successfully" });
 })

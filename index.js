@@ -2,12 +2,23 @@ import express from "express";
 import dotenv from 'dotenv'
 import connectDB from "./database/db.js";
 import cookieParser from "cookie-parser";
+import cors from 'cors'
+import Razorpay from 'razorpay'
 const app = express()
 dotenv.config({
     quiet: true // ----> Quite is for stop showing message of dot env in terminal
 })
-
+// razor pay step 1
+export const instance = new Razorpay({
+    key_id: process.env.Razorpay_Key,
+    key_secret: process.env.Razorpay_Secret
+})
+// using middleware
 app.use(express.json())
+app.use(cors({
+    origin: "http://localhost:5173", // frontend URL
+    credentials: true
+}))
 
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
