@@ -20,7 +20,7 @@ export const instance = new Razorpay({
 
 
 app.use(cors({
-    origin: "http://localhost:5173", // frontend URL
+    origin: "https://elearning-five-tau.vercel.app", // frontend URL
     credentials: true
 }))
 
