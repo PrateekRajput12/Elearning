@@ -65,7 +65,7 @@ export const deleteLecture = TryCatch(async (req, res) => {
 
 })
 
-const unlikeAsync = promisify(fs.unlink)
+// const unlikeAsync = promisify(fs.unlink)
 
 // export const deleteCourse = TryCatch(async (req, res) => {
 //     const id = req.params.id
@@ -168,4 +168,35 @@ export const getAllStats = TryCatch(async (req, res) => {
     }
 
     res.json({ stats })
+})
+
+export const getAllUser = TryCatch(async (req, res) => {
+    const users = await User.find({ _id: { $ne: req.user.id } }).select(
+        '-password'
+    )
+    res.json({ users })
+})
+
+
+export const updateRole = TryCatch(async (req, res) => {
+    const user = await User.findById(req.params.id)
+
+    if (user.role === "user") {
+        user.role = "admin"
+
+        await user.save()
+
+        return res.status(200).json({
+            message: "Role updated to admin "
+        })
+    }
+    if (user.role === "admin") {
+        user.role = "user"
+
+        await user.save()
+
+        return res.status(200).json({
+            message: "Role updated "
+        })
+    }
 })

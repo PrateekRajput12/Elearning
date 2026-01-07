@@ -4,6 +4,9 @@ import connectDB from "./database/db.js";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
 import Razorpay from 'razorpay'
+import userRoutes from './routes/user.js'
+import adminRoutes from './routes/admin.js'
+import courseRoutes from './routes/course.js'
 const app = express()
 dotenv.config({
     quiet: true // ----> Quite is for stop showing message of dot env in terminal
@@ -14,11 +17,21 @@ export const instance = new Razorpay({
     key_secret: process.env.Razorpay_Secret
 })
 // using middleware
-app.use(express.json())
+
+
 app.use(cors({
     origin: "http://localhost:5173", // frontend URL
     credentials: true
 }))
+
+
+// app.options("/api/course/delete/:id", cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+// }));
+
+
+app.use(express.json())
 
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -32,9 +45,7 @@ app.get("/", (req, res) => {
 
 
 // Importing Routes
-import userRoutes from './routes/user.js'
-import adminRoutes from './routes/admin.js'
-import courseRoutes from './routes/course.js'
+
 // using routes 
 app.use("/api", userRoutes)   // ---> api har uske pehle ayegi
 app.use("/api", adminRoutes)
