@@ -103,18 +103,18 @@ export const deleteCourse = TryCatch(async (req, res) => {
         return res.status(404).json({ message: "Course not found" })
     }
 
-    console.log("point 1")
+    // console.log("point 1")
 
     // 1️⃣ Find all lectures of this course
     const lectures = await Lecture.find({ course: course._id })
-    console.log("point 2")
+    // console.log("point 2")
     // console.log(lectures);
     // 2️⃣ Delete lecture videos safely
     await Promise.all(
         lectures.map(async (lecture) => {
             try {
                 if (lecture.video && fs.existsSync(lecture.video)) {
-                    console.log("Deleting video:", lecture.video)
+                    // console.log("Deleting video:", lecture.video)
                     await unlinkAsync(lecture.video)
                 }
             } catch (err) {
@@ -123,7 +123,7 @@ export const deleteCourse = TryCatch(async (req, res) => {
         })
     )
 
-    console.log("point 3")
+    // console.log("point 3")
 
     // 3️⃣ Delete course thumbnail safely
     try {
@@ -134,14 +134,14 @@ export const deleteCourse = TryCatch(async (req, res) => {
         console.error("Image delete error:", err.message)
     }
 
-    console.log("point 4")
+    // console.log("point 4")
 
     // 4️⃣ Delete lectures from DB
     await Lecture.deleteMany({ course: course._id })
 
     // 5️⃣ Delete course
     await course.deleteOne()
-    console.log("point 5")
+    // console.log("point 5")
 
     // 6️⃣ Remove course from user subscriptions
     await User.updateMany(
@@ -149,7 +149,7 @@ export const deleteCourse = TryCatch(async (req, res) => {
         { $pull: { subscription: course._id } }
     )
 
-    console.log("point 6")
+    // console.log("point 6")
 
     res.json({ message: "Course Deleted Successfully" })
 })
