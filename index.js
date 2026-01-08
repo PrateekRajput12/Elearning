@@ -21,13 +21,23 @@ export const instance = new Razorpay({
 })
 // using middleware
 
+// app.set("trust proxy", 1);
+
+// app.use(cors({
+//     origin: ["https://elearning-client-zo7h.onrender.com", "https://elearning-five-tau.vercel.app",
+//         "http://localhost:5173"], // frontend URL
+//     credentials: true
+// }))
 app.set("trust proxy", 1);
 
 app.use(cors({
-    origin: ["https://elearning-client-zo7h.onrender.com", "https://elearning-five-tau.vercel.app",
-        "http://localhost:5173"], // frontend URL
-    credentials: true
-}))
+    origin: [
+        "https://elearning-five-tau.vercel.app"
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 
 // app.options("/api/course/delete/:id", cors({

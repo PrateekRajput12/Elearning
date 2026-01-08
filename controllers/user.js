@@ -45,12 +45,20 @@ export const register = async (req, res) => {
         )
 
 
+        // res.cookie("activationToken", activationToken, {
+        //     httpOnly: true,
+        //     sameSite: "lax", // use "none" + secure:true in production
+        //     secure: false,   // true only on HTTPS
+        //     maxAge: 5 * 60 * 1000
+        // })
+
         res.cookie("activationToken", activationToken, {
             httpOnly: true,
-            sameSite: "lax", // use "none" + secure:true in production
-            secure: false,   // true only on HTTPS
+            sameSite: "none",   // REQUIRED for cross-site
+            secure: true,      // REQUIRED on HTTPS
             maxAge: 5 * 60 * 1000
-        })
+        });
+
 
         res.status(200).json({
             message: "Otp sent to your email"
@@ -114,12 +122,21 @@ export const loginUser = TryCatch(async (req, res) => {
         expiresIn: "7d"
     })
 
+    // res.cookie("token", token, {
+    //     httpOnly: true,
+    //     secure: false,      // true in production (HTTPS)
+    //     sameSite: "lax",
+    //     maxAge: 7 * 24 * 60 * 60 * 1000
+    // })
+
+
     res.cookie("token", token, {
         httpOnly: true,
-        secure: false,      // true in production (HTTPS)
-        sameSite: "lax",
+        secure: true,          // MUST be true on HTTPS
+        sameSite: "none",      // MUST be none for cross-domain
         maxAge: 7 * 24 * 60 * 60 * 1000
-    })
+    });
+
     res.json({
         message: ` Welcome back ${user.name}`,
         user
