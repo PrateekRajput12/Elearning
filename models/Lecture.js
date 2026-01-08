@@ -10,10 +10,15 @@ const letureSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    // video: {
+    //     type: String,
+    //     required: true
+    // },
     video: {
-        type: String,
-        required: true
+        public_id: String,
+        url: String,
     },
+
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",

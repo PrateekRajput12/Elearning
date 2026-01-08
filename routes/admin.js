@@ -8,7 +8,7 @@ const router = express.Router()
 
 
 router.post("/course/new", isAuth, isAdmin, upload.single("image"), createCourse)
-router.post("/course/:id", isAuth, isAdmin, upload.single("image"), addLecture)
+router.post("/course/:id", isAuth, isAdmin, upload.single("video"), addLecture)
 router.delete("/course/delete/:id", isAuth, isAdmin, deleteCourse)
 
 router.delete("/lecture/delete/:id", isAuth, isAdmin, deleteLecture)

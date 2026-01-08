@@ -17,7 +17,11 @@ export const createCourse = TryCatch(async (req, res) => {
         description,
         category,
         createdBy,
-        image: image?.path,
+        // image: image?.path,
+        image: {
+            public_id: req.file.filename,
+            url: req.file.path,
+        },
         duration,
         price
     })
@@ -38,9 +42,19 @@ export const addLecture = TryCatch(async (req, res) => {
 
     const { title, description, } = req.body
 
-    const file = req.file.path
+    // const file = req.file.path
 
-    const lecture = await Lecture.create({ title, description, video: file, course: course._id })
+    const lecture = await Lecture.create({
+        title, description,
+
+        // video: file,
+        video: {
+            public_id: req.file.filename,
+            url: req.file.path,
+        },
+
+        course: course._id
+    })
 
     res.status(201).json({
         message: "Lecture Added",
@@ -49,32 +63,38 @@ export const addLecture = TryCatch(async (req, res) => {
     })
 })
 
+export const deleteFromCloudinary = async (public_id, resourceType) => {
+    if (!public_id) return;
 
-
-export const deleteLecture = TryCatch(async (req, res) => {
-    const id = req.params.id
-    const lecture = await Lecture.findById(id)
-    // rm(lecture.video, () => {
-    //     console.log("video deleted ");
-    // })
-
-    // await lecture.deleteOne()
-
-    // res.status(200).json({ message: "Lecture deleted" })
-
-    if (!lecture) {
-        return res.status(404).json({ message: "Lecture not found" });
-    }
-
-    // 🔥 Delete video from Cloudinary
-    await deleteFromCloudinary(lecture?.video, "video");
-
-    await lecture.deleteOne();
-
-    res.status(200).json({
-        message: "Lecture deleted successfully",
+    await cloudinary.uploader.destroy(public_id, {
+        resource_type: resourceType,
     });
-})
+};
+
+// export const deleteLecture = TryCatch(async (req, res) => {
+//     const id = req.params.id
+//     const lecture = await Lecture.findById(id)
+//     // rm(lecture.video, () => {
+//     //     console.log("video deleted ");
+//     // })
+
+//     // await lecture.deleteOne()
+
+//     // res.status(200).json({ message: "Lecture deleted" })
+
+//     if (!lecture) {
+//         return res.status(404).json({ message: "Lecture not found" });
+//     }
+
+//     // 🔥 Delete video from Cloudinary
+//     await deleteFromCloudinary(lecture?.video, "video");
+
+//     await lecture.deleteOne();
+
+//     res.status(200).json({
+//         message: "Lecture deleted successfully",
+//     });
+// })
 
 // const unlikeAsync = promisify(fs.unlink)
 
@@ -101,6 +121,20 @@ export const deleteLecture = TryCatch(async (req, res) => {
 //     res.json({ message: "Course Deleted Successfully" })
 
 // })
+export const deleteLecture = async (req, res) => {
+    const lecture = await Lecture.findById(req.params.id);
+
+    if (!lecture) {
+        return res.status(404).json({ message: "Lecture not found" });
+    }
+
+    await deleteFromCloudinary(lecture.video.public_id, "video");
+    await lecture.deleteOne();
+
+    res.status(200).json({
+        message: "Lecture deleted successfully",
+    });
+};
 
 
 const unlinkAsync = promisify(fs.unlink)
@@ -166,6 +200,31 @@ const unlinkAsync = promisify(fs.unlink)
 // })
 
 // with cloudinary
+// export const deleteCourse = async (req, res) => {
+//     const course = await Course.findById(req.params.id);
+
+//     if (!course) {
+//         return res.status(404).json({ message: "Course not found" });
+//     }
+
+//     // 🔥 Delete course image
+//     await deleteFromCloudinary(course.image, "image");
+
+//     // 🔥 Find & delete all lectures
+//     const lectures = await Lecture.find({ course: course._id });
+
+//     for (const lecture of lectures) {
+//         await deleteFromCloudinary(lecture.video, "video");
+//         await lecture.deleteOne();
+//     }
+
+//     await course.deleteOne();
+
+//     res.status(200).json({
+//         message: "Course & lectures deleted successfully",
+//     });
+// };
+
 export const deleteCourse = async (req, res) => {
     const course = await Course.findById(req.params.id);
 
@@ -173,24 +232,21 @@ export const deleteCourse = async (req, res) => {
         return res.status(404).json({ message: "Course not found" });
     }
 
-    // 🔥 Delete course image
-    await deleteFromCloudinary(course.image, "image");
+    await deleteFromCloudinary(course.image.public_id, "image");
 
-    // 🔥 Find & delete all lectures
     const lectures = await Lecture.find({ course: course._id });
 
-    for (const lecture of lectures) {
-        await deleteFromCloudinary(lecture.video, "video");
+    for (let lecture of lectures) {
+        await deleteFromCloudinary(lecture.video.public_id, "video");
         await lecture.deleteOne();
     }
 
     await course.deleteOne();
 
     res.status(200).json({
-        message: "Course & lectures deleted successfully",
+        message: "Course deleted successfully",
     });
 };
-
 
 export const getAllStats = TryCatch(async (req, res) => {
     const totalCourses = (await Course.find()).length

@@ -10,9 +10,14 @@ const courseSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    // image: {
+    //     type: String,
+    //     required: true
+    // },
+
     image: {
-        type: String,
-        required: true
+        public_id: String,
+        url: String,
     },
     price: {
         type: Number, required: true
