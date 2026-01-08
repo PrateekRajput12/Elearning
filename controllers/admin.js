@@ -54,15 +54,26 @@ export const addLecture = TryCatch(async (req, res) => {
 export const deleteLecture = TryCatch(async (req, res) => {
     const id = req.params.id
     const lecture = await Lecture.findById(id)
-    rm(lecture.video, () => {
-        console.log("video deleted ");
-    })
+    // rm(lecture.video, () => {
+    //     console.log("video deleted ");
+    // })
 
-    await lecture.deleteOne()
+    // await lecture.deleteOne()
 
-    res.status(200).json({ message: "Lecture deleted" })
+    // res.status(200).json({ message: "Lecture deleted" })
 
+    if (!lecture) {
+        return res.status(404).json({ message: "Lecture not found" });
+    }
 
+    // 🔥 Delete video from Cloudinary
+    await deleteFromCloudinary(lecture?.video, "video");
+
+    await lecture.deleteOne();
+
+    res.status(200).json({
+        message: "Lecture deleted successfully",
+    });
 })
 
 // const unlikeAsync = promisify(fs.unlink)
@@ -95,64 +106,90 @@ export const deleteLecture = TryCatch(async (req, res) => {
 const unlinkAsync = promisify(fs.unlink)
 
 // 
-export const deleteCourse = TryCatch(async (req, res) => {
-    const { id } = req.params
+// export const deleteCourse = TryCatch(async (req, res) => {
+//     const { id } = req.params
 
-    const course = await Course.findById(id)
+//     const course = await Course.findById(id)
+//     if (!course) {
+//         return res.status(404).json({ message: "Course not found" })
+//     }
+
+//     // console.log("point 1")
+
+//     // 1️⃣ Find all lectures of this course
+//     const lectures = await Lecture.find({ course: course._id })
+//     // console.log("point 2")
+//     // console.log(lectures);
+//     // 2️⃣ Delete lecture videos safely
+//     await Promise.all(
+//         lectures.map(async (lecture) => {
+//             try {
+//                 if (lecture.video && fs.existsSync(lecture.video)) {
+//                     // console.log("Deleting video:", lecture.video)
+//                     await unlinkAsync(lecture.video)
+//                 }
+//             } catch (err) {
+//                 console.error("Video delete error:", err.message)
+//             }
+//         })
+//     )
+
+//     // console.log("point 3")
+
+//     // 3️⃣ Delete course thumbnail safely
+//     try {
+//         if (course.image && fs.existsSync(course.image)) {
+//             await unlinkAsync(course.image)
+//         }
+//     } catch (err) {
+//         console.error("Image delete error:", err.message)
+//     }
+
+//     // console.log("point 4")
+
+//     // 4️⃣ Delete lectures from DB
+//     await Lecture.deleteMany({ course: course._id })
+
+//     // 5️⃣ Delete course
+//     await course.deleteOne()
+//     // console.log("point 5")
+
+//     // 6️⃣ Remove course from user subscriptions
+//     await User.updateMany(
+//         {},
+//         { $pull: { subscription: course._id } }
+//     )
+
+//     // console.log("point 6")
+
+//     res.json({ message: "Course Deleted Successfully" })
+// })
+
+// with cloudinary
+export const deleteCourse = async (req, res) => {
+    const course = await Course.findById(req.params.id);
+
     if (!course) {
-        return res.status(404).json({ message: "Course not found" })
+        return res.status(404).json({ message: "Course not found" });
     }
 
-    // console.log("point 1")
+    // 🔥 Delete course image
+    await deleteFromCloudinary(course.image, "image");
 
-    // 1️⃣ Find all lectures of this course
-    const lectures = await Lecture.find({ course: course._id })
-    // console.log("point 2")
-    // console.log(lectures);
-    // 2️⃣ Delete lecture videos safely
-    await Promise.all(
-        lectures.map(async (lecture) => {
-            try {
-                if (lecture.video && fs.existsSync(lecture.video)) {
-                    // console.log("Deleting video:", lecture.video)
-                    await unlinkAsync(lecture.video)
-                }
-            } catch (err) {
-                console.error("Video delete error:", err.message)
-            }
-        })
-    )
+    // 🔥 Find & delete all lectures
+    const lectures = await Lecture.find({ course: course._id });
 
-    // console.log("point 3")
-
-    // 3️⃣ Delete course thumbnail safely
-    try {
-        if (course.image && fs.existsSync(course.image)) {
-            await unlinkAsync(course.image)
-        }
-    } catch (err) {
-        console.error("Image delete error:", err.message)
+    for (const lecture of lectures) {
+        await deleteFromCloudinary(lecture.video, "video");
+        await lecture.deleteOne();
     }
 
-    // console.log("point 4")
+    await course.deleteOne();
 
-    // 4️⃣ Delete lectures from DB
-    await Lecture.deleteMany({ course: course._id })
-
-    // 5️⃣ Delete course
-    await course.deleteOne()
-    // console.log("point 5")
-
-    // 6️⃣ Remove course from user subscriptions
-    await User.updateMany(
-        {},
-        { $pull: { subscription: course._id } }
-    )
-
-    // console.log("point 6")
-
-    res.json({ message: "Course Deleted Successfully" })
-})
+    res.status(200).json({
+        message: "Course & lectures deleted successfully",
+    });
+};
 
 
 export const getAllStats = TryCatch(async (req, res) => {
