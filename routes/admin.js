@@ -1,7 +1,7 @@
 import express from 'express'
 import { isAdmin, isAuth } from '../middleware/isAuth.js'
 import { addLecture, createCourse, deleteCourse, deleteLecture, getAllStats, getAllUser, updateRole } from '../controllers/admin.js'
-import upload, { uploadFile } from '../middleware/multer.js'
+import upload from '../middleware/multer.js'
 
 
 const router = express.Router()
