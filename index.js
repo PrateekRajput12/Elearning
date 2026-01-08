@@ -8,6 +8,9 @@ import userRoutes from './routes/user.js'
 import adminRoutes from './routes/admin.js'
 import courseRoutes from './routes/course.js'
 const app = express()
+import helmet from "helmet";
+app.use(helmet());
+
 dotenv.config({
     quiet: true // ----> Quite is for stop showing message of dot env in terminal
 })
@@ -18,9 +21,11 @@ export const instance = new Razorpay({
 })
 // using middleware
 
+app.set("trust proxy", 1);
 
 app.use(cors({
-    origin: "https://elearning-five-tau.vercel.app", // frontend URL
+    origin: ["https://elearning-five-tau.vercel.app",
+        "http://localhost:5173"], // frontend URL
     credentials: true
 }))
 
@@ -50,9 +55,10 @@ app.get("/", (req, res) => {
 app.use("/api", userRoutes)   // ---> api har uske pehle ayegi
 app.use("/api", adminRoutes)
 app.use("/api", courseRoutes)
+connectDB()
 app.listen(PORT, () => {
 
     console.log(`running on port ${PORT}`);
-    connectDB()
+
 
 })
