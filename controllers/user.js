@@ -153,12 +153,19 @@ export const userProfile = TryCatch(async (req, res) => {
 })
 
 export const logOut = TryCatch(async (req, res) => {
-    res.cookie("token", "", {
+    // res.cookie("token", "", {
+    //     httpOnly: true,
+    //     expires: new Date(0), // past date
+    //     sameSite: "lax",
+    //     secure: true // true in production
+    // });
+    res.clearCookie("token", {
         httpOnly: true,
-        expires: new Date(0), // past date
-        sameSite: "lax",
-        secure: true // true in production
+        secure: true,
+        sameSite: "none",
     });
+    res.status(200).json({ message: "Logged out" });
+
 
     res.json({ message: "Logged out successfully" });
 })
