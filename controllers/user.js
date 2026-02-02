@@ -157,7 +157,7 @@ export const logOut = TryCatch(async (req, res) => {
         httpOnly: true,
         expires: new Date(0), // past date
         sameSite: "lax",
-        secure: false // true in production
+        secure: true // true in production
     });
 
     res.json({ message: "Logged out successfully" });
